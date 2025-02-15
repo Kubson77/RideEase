@@ -40,9 +40,9 @@ def list_rented_cars(db: db_dependency):
 # Endpoint to list available cars
 @app.get("/available_cars/")
 def list_available_cars(db: db_dependency):
-    subquery = select(RentCar.car_id).where(RentCar.returned_on.is_(None))
+    subquery = select(RentCar.car_id).where(RentCar.returned_on < date.today())
 
-    available_cars = db.query(Car).filter(~Car.id.in_(subquery)).all()
+    available_cars = db.query(Car).filter(Car.id.in_(subquery.distinct())).all()
 
     return [
         {
